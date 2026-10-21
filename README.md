@@ -19,4 +19,7 @@
 Чтобы отобразить содержание таблицы:
 ```SELECT * FROM orders;```
 
+Чтобы отобразить содержание таблицы снаружи контейнера необходимо передать в docker exec sql-запрос:
+```docker exec postgres_db psql -U postgres -d orders_db -c "SELECT * FROM orders;"```
+
 При перезапуске/пересборке контейнера база данных сохраняется в volume pgdata.
