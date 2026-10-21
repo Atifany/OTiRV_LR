@@ -1,25 +1,18 @@
 # Облачные Технологии и Распределенные Вычисления ЛР1
 
-Для сборки контейнера postgres необходимо выполнить скрипт запуска контейнера<br>
-```./run-postgres.sh```
+Первый запуск docker compose<br>
+```docker compose up -d --build --force-recreate```<br>
 
-Для запуска или остановки контейнера:
-```docker start postgres_db```
-```docker stop postgres_db```
+Для запуска или остановки контейнера:<br>
+```docker compose up -d```<br>
+```docker compose down```<br>
 
-Для удаления контейнера:
-```docker rm postgres_db```
+Для удаления контейнера:<br>
+```docker compose down --rmi all```<br>
 
-Зайти в контейнер базы данных с помощью psql:
-```docker exec -it postgres_db psql -U postgres -d orders_db```
+Для проверки работы приложения необходимо перейти по адресу:<br>
+```http://localhost:8080/orders```<br>
 
-Чтобы отобразить существующие таблицы:
-```\dt```
-
-Чтобы отобразить содержание таблицы:
-```SELECT * FROM orders;```
-
-Чтобы отобразить содержание таблицы снаружи контейнера необходимо передать в docker exec sql-запрос:
-```docker exec postgres_db psql -U postgres -d orders_db -c "SELECT * FROM orders;"```
-
+Логи запросов к БД сохраняются в файл /app_logs/database-queries.log<br>
+При перезапуске/пересборке контейнера логи сохраняются в volume app_logs.<br>
 При перезапуске/пересборке контейнера база данных сохраняется в volume pgdata.
