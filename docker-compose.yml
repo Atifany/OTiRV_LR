@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # 1. Сервис Базы Данных PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # Хранилище для самих таблиц и данных базы
+      - pgdata:/var/lib/postgresql/data
+      # Проброс папки со скриптами инициализации
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+  # 2. Сервис Java-приложения (Spring Boot)
+  java-app:
+    build: ./order-service
+    container_name: java_web_server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+      # Постоянное хранилище для логов SQL-запросов приложения
+      - ./app_logs:/app/logs
+    restart: unless-stopped
+
+# Объявляем постоянные именованные тома
+volumes:
+  pgdata:
+  app_logs:
