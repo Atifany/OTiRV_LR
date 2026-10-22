@@ -12,9 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # Хранилище для самих таблиц и данных базы
       - pgdata:/var/lib/postgresql/data
-      # Проброс папки со скриптами инициализации
       - ./init-scripts:/docker-entrypoint-initdb.d
     restart: unless-stopped
 
@@ -27,7 +25,6 @@ services:
     depends_on:
       - db
     volumes:
-      # Постоянное хранилище для логов SQL-запросов приложения
       - ./app_logs:/app/logs
     restart: unless-stopped
 
