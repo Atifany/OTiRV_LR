@@ -21,7 +21,7 @@ services:
     build: ./order-service
     container_name: java_web_server
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:8080"
     depends_on:
       - db
     volumes:
