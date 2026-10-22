@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   # 1. Сервис Базы Данных PostgreSQL
-  db:
+  postgres_db:
     image: postgres:16-alpine
     container_name: postgres_db
     environment:
@@ -17,18 +15,35 @@ services:
     restart: unless-stopped
 
   # 2. Сервис Java-приложения (Spring Boot)
-  java-app:
+  order-service:
     build: ./order-service
     container_name: java_web_server
     ports:
       - "${APP_PORT}:8080"
     depends_on:
-      - db
+      - postgres_db
     volumes:
       - ./app_logs:/app/logs
     restart: unless-stopped
+
+  # 2. Сервис web-dbeaver
+  dbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: dbeaver_web
+    restart: unless-stopped
+    ports:
+      - "${DBEAVER_PORT}:8978"
+    environment:
+      - CLOUDBEAVER_APP_ANONYMOUS_ACCESS_ENABLED=false
+      - CLOUDBEAVER_APP_PUBLIC_CREDENTIALS_SAVE_ENABLED=true
+      - CLOUDBEAVER_APP_ADMIN_CREDENTIALS_SAVE_ENABLED=true
+    volumes:
+      - ./dbeaver_data:/opt/cloudbeaver/workspace
+    depends_on:
+      - postgres_db
 
 # Объявляем постоянные именованные тома
 volumes:
   pgdata:
   app_logs:
+  dbeaver_data:

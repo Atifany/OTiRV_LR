@@ -21,6 +21,9 @@ public class Order {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+	// Пустой конструктор для чтения
+	public Order() {}
+
     // Геттеры и сеттеры
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -30,6 +33,10 @@ public class Order {
 
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
+
+	// Перехватчик: автоматически ставит текущее время сервера перед записью в БД
+	@PrePersist
+	protected void onCreate() { this.createdAt = LocalDateTime.now(); }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

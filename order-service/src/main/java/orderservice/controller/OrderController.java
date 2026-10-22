@@ -2,23 +2,29 @@ package orderservice.controller;
 
 import orderservice.db.Order;
 import orderservice.db.OrderRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/orders")
 public class OrderController {
 
     private final OrderRepository orderRepository;
 
-    // Зависимость внедряется автоматически через конструктор
+    // Внедряем репозиторий через конструктор
     public OrderController(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 
-    @GetMapping("/orders")
+    // Чтение
+    @GetMapping
     public List<Order> getAllOrders() {
-        // Запрос к этому методу сгенерирует SQL-логи, которые запишутся в примонтированный файл
         return orderRepository.findAll();
+    }
+
+    // Запись
+    @PostMapping
+    public Order createOrder(@RequestBody Order newOrder) {
+        return orderRepository.save(newOrder);
     }
 }
