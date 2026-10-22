@@ -19,9 +19,10 @@
 ```
 curl -X POST http://localhost:8081/orders \
      -H "Content-Type: application/json" \
-     -d '{"productName": "Inforce RD1307RV-I", "price": 4990.00}'
+     -d '{"productName": "Интерскол ДУ-13/780ЭР", "price": 3790.00}'
 ```
 
+Кофиги подключений cloudbeaver сохраняются в volume dbeaver_data.<br>
 Логи запросов к БД сохраняются в файл /app_logs/database-queries.log<br>
 При перезапуске/пересборке контейнера логи сохраняются в volume app_logs.<br>
 При перезапуске/пересборке контейнера база данных сохраняется в volume pgdata.
