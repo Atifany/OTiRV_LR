@@ -19,6 +19,9 @@
 Чтобы отобразить содержание таблицы:<br>
 ```SELECT * FROM orders;```<br>
 
+Чтобы добавить строчку в таблицу:<br>
+```INSERT INTO orders (product_name, price) VALUES ('Macbook air 2019 M1', 25000.00);```
+
 Чтобы отобразить содержание таблицы снаружи контейнера необходимо передать в docker exec sql-запрос:<br>
 ```docker exec postgres_db psql -U postgres -d orders_db -c "SELECT * FROM orders;"```<br>
 
