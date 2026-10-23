@@ -7,6 +7,9 @@
 ```docker compose up -d```<br>
 ```docker compose down```<br>
 
+Для запуска нескольких реплик order-service (3шт):<br>
+```docker compose up -d --scale order-service=3```
+
 Для удаления контейнера:<br>
 ```docker compose down --rmi all```<br>
 
@@ -19,8 +22,11 @@
 ```
 curl -X POST http://localhost:8081/orders \
      -H "Content-Type: application/json" \
-     -d '{"productName": "Интерскол ДУ-13/780ЭР", "price": 3790.00}'
+     -d '{"productName": "Makita HP1640", "price": 9000.00}'
 ```
+
+Для проверки последних 20 строк логов докера (для проверки работы балансировщика прокси):<br>
+```docker compose logs --tail=20 order-service```
 
 Кофиги подключений cloudbeaver сохраняются в volume dbeaver_data.<br>
 Логи запросов к БД сохраняются в файл /app_logs/database-queries.log<br>
