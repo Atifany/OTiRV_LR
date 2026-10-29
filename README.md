@@ -14,7 +14,7 @@
 ```docker compose down --rmi all```<br>
 
 Для доступа к приложению (настраивается в .env):<br>
-```http://localhost:8081/orders```<br>
+```http://localhost:8080/orders```<br>
 Для доступа к web-dbeaver (настраивается в .env):<br>
 ```http://localhost:8082```<br>
 
