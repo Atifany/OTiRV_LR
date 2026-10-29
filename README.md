@@ -22,7 +22,7 @@
 ```
 curl -X POST http://localhost:8080/orders \
      -H "Content-Type: application/json" \
-     -d '{"productName": "Makita DF333DYX", "price": 10000.00}'
+     -d '{"productName": "Makita 22222", "price": 10000.00}'
 ```
 
 Чтение логов одного контейнера:
