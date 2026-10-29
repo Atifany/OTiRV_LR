@@ -20,10 +20,13 @@
 
 Для проверки POST запроса order-service можно записать новую строку в таблицу через терминал:<br>
 ```
-curl -X POST http://localhost:8081/orders \
+curl -X POST http://localhost:8080/orders \
      -H "Content-Type: application/json" \
-     -d '{"productName": "Makita HP1640", "price": 9000.00}'
+     -d '{"productName": "Makita DF333DYX", "price": 10000.00}'
 ```
+
+Чтение логов одного контейнера:
+```docker logs otirv_lr-order-service-1 --tail=15```
 
 Для проверки последних 20 строк логов докера (для проверки работы балансировщика прокси):<br>
 ```docker compose logs --tail=20 order-service```
