@@ -1,80 +1,22 @@
-# Облачные Технологии и Распределенные Вычисления ЛР3
+# Облачные Технологии и Распределенные Вычисления ЛР4
 
-Теория:
-etcd — это высоконадежное распределенное хранилище данных формата «ключ-значение» (key-value), разработанное для совместной работы в составе распределенных систем.
-Строгая согласованность (Strong Consistency): etcd гарантирует, что все узлы кластера в любой момент времени видят абсолютно одинаковые данные. Если запись подтверждена, она гарантированно доступна для чтения всем клиентам.
-Протокол консенсуса Raft: База данных работает на основе алгоритма Raft, который автоматически выбирает лидера среди узлов. Если один или несколько серверов «упадут», система продолжит корректно работать, пока доступно большинство узлов (кворум).
-Лидер контролирует все операции и фоловеров. Если кто-то из фоловеров упадет, лидер не получит регулярного ответа на пинг от него и сообщит всем что узел упал. Если упал лидер, то фоловеры перестанут получать пинги от него и начнут свои выборы. Raft обеспечивает, что один узел окажется первым, повысит свой term (эпоху) и разошлет эту информацию остальным фоловерам. Если нет никого с term выше или раньше, то его выбирают лидером и все повышают свой term. Когда бывший лидер восстановится, он увидит, что у всех в сети term больше и станет фоловером.
-
-order-service в данной работе не используется.
-
-Для запуска etcd кластера:
-```docker compose -p etcd-lab -f docker-compose.etcd.yaml up -d```
-Для остановки всего кластера:
-```docker compose -p etcd-lab -f docker-compose.etcd.yaml down```
-Для удаления volume's:
-```docker compose -p etcd-lab -f docker-compose.etcd.yaml down -v```
-Проверка состояния контейнера:
-```docker compose -p etcd-lab -f docker-compose.etcd.yaml ps -a```
-Прямая проверка работоспособности всех контейнеров:
-```docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 endpoint health```
-Посмотреть список узлов:
-```docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 member list -w table```
-Посмотреть статус узлов:
-```docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 endpoint status -w table```
-Сохранение тестовых значений пример с хабра (через символ / записывается префикс ключа):
+Для запука etcd кластера:<br>
+```docker compose -p etcd-lab -f docker-compose.etcd.yaml up -d```<br>
+Проверка контейнеров кластера:<br>
+```docker compose -p etcd-lab -f docker-compose.etcd.yaml ps -a```<br>
+Проверка здоровья узлов кластера etcd:<br>
 ```
-docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 put /lab/etcd/cluster "etcd-3-node"
-docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 put /lab/etcd/leader "etcd3"
-docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 put /lab/etcd/quorum "2-of-3"
-docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 put /lab/etcd/test/value "hello-distributed"
+docker exec etcd1 etcdctl \
+  --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 \
+  endpoint health
 ```
-Просмотр всех данных по префиксу /lab/etcd/:
-```docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 get /lab/etcd/ --prefix```
-Проверка согласованности: читаю одно значение со всех узлов:
+Таблица состояния кластера etcd:<br>
 ```
-echo "---";
-docker exec etcd1 etcdctl --endpoints=http://127.0.0.1:2379 get /lab/etcd/ --prefix;
-echo "---";
-docker exec etcd2 etcdctl --endpoints=http://127.0.0.1:2379 get /lab/etcd/ --prefix;
-echo "---";
-docker exec etcd3 etcdctl --endpoints=http://127.0.0.1:2379 get /lab/etcd/ --prefix;
-echo "---";
+docker exec etcd1 etcdctl \
+  --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 \
+  endpoint status -w table
 ```
-Сценарий добавления 4го узла:
-Регистрация нового узла в кластере:
-```docker exec etcd1 etcdctl member add etcd4 --peer-urls=http://etcd4:2380```
-Включание 4го узла:
-```docker compose -p etcd-lab -f docker-compose.etcd.yaml up -d etcd4```
-Отключение и удаление 4го узла (Нужен его ID table):
-```
-docker compose -p etcd-lab -f docker-compose.etcd.yaml rm -sf etcd4
-docker volume rm etcd-lab_etcd4-data
-docker exec etcd1 etcdctl member remove <ID_etcd4>
-```
-Теперь проверка здоровья 4х узлов:
-```docker exec etcd1 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379,http://etcd4:2379 endpoint health```
-Проверка лидерства на 4х узлах:
-```docker exec etcd2 etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379,http://etcd4:2379 endpoint status -w table```
-Прочитать значения в базе:
-```docker exec etcd1 etcdctl get / --prefix```
-Отсановка любого узла:
-```docker stop etcd1```
-Включение любого узла:
-```docker start etcd1```
 
-
-
-
-Первый запуск docker compose<br>
-```docker compose up -d --build --force-recreate```<br>
-
-Для запуска или остановки контейнера:<br>
-```docker compose up -d```<br>
-```docker compose down```<br>
-
-Для запуска нескольких реплик order-service (3шт):<br>
-```docker compose up -d --scale order-service=3```
 
 Для удаления контейнера:<br>
 ```docker compose down --rmi all```<br>
