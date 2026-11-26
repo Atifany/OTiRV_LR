@@ -1,0 +1,72 @@
+services:
+  patroni1:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: patroni1
+    environment:
+      PATRONI_NAME: patroni1
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: patroni1:5432
+      PATRONI_RESTAPI_CONNECT_ADDRESS: patroni1:8008
+    ports:
+      - "127.0.0.1:8008:8008"
+    volumes:
+      - ./patroni/patroni.yml:/patroni.yml:ro
+      - ./init-scripts:/opt/init-scripts:ro
+      - patroni1_data:/var/lib/postgresql
+    restart: unless-stopped
+    networks:
+      - etcd-net
+      - patroni-net
+
+  patroni2:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: patroni2
+    environment:
+      PATRONI_NAME: patroni2
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: patroni2:5432
+      PATRONI_RESTAPI_CONNECT_ADDRESS: patroni2:8008
+    ports:
+      - "127.0.0.1:8009:8008"
+    volumes:
+      - ./patroni/patroni.yml:/patroni.yml:ro
+      - ./init-scripts:/opt/init-scripts:ro
+      - patroni2_data:/var/lib/postgresql
+    restart: unless-stopped
+    networks:
+      - etcd-net
+      - patroni-net
+
+  patroni3:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: patroni3
+    environment:
+      PATRONI_NAME: patroni3
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: patroni3:5432
+      PATRONI_RESTAPI_CONNECT_ADDRESS: patroni3:8008
+    ports:
+      - "127.0.0.1:8010:8008"
+    volumes:
+      - ./patroni/patroni.yml:/patroni.yml:ro
+      - ./init-scripts:/opt/init-scripts:ro
+      - patroni3_data:/var/lib/postgresql
+    restart: unless-stopped
+    networks:
+      - etcd-net
+      - patroni-net
+
+volumes:
+  patroni1_data:
+  patroni2_data:
+  patroni3_data:
+
+networks:
+  patroni-net:
+    driver: bridge
+  etcd-net:
+    external: true
+    name: etcd-lab_default

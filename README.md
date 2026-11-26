@@ -17,6 +17,28 @@ docker exec etcd1 etcdctl \
   endpoint status -w table
 ```
 
+Для запуска кластера patroni:<br>
+```docker compose -p pg-lab -f docker-compose.patroni.yaml up -d```
+Проверка контейнеров кластера:<br>
+```docker compose -p pg-lab -f docker-compose.patroni.yaml ps```
+Проверка состояния кластера patroni:<br>
+```docker exec patroni1 patronictl -c /patroni.yml list```
+Просмотр логов при ошибке:<br>
+```docker compose -p pg-lab logs patroni2 | tail -60```
+Сбросить ключ лидера из etcd:<br>
+```docker exec etcd1 etcdctl --endpoints=http://etcd1:2379 del /service/pg-cluster/initialize```
+
+Проверка чтения с базы данных:<br>
+```docker exec patroni1 psql -U postgres -d orders_db -c "SELECT * FROM orders;"```
+Проверка записи в базу данных (запись только на лидере):<br>
+```
+docker exec patroni2 psql -U postgres -d orders_db -c \
+  "INSERT INTO orders (product_name, price) VALUES ('Makita2470', 15000.00);"
+```
+
+Switchover test:<br>
+```docker exec patroni1 patronictl -c /patroni.yml switchover --force```
+
 
 Для удаления контейнера:<br>
 ```docker compose down --rmi all```<br>
