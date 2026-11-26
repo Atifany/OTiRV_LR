@@ -13,7 +13,7 @@ services:
     volumes:
       - ./patroni/patroni.yml:/patroni.yml:ro
       - ./init-scripts:/opt/init-scripts:ro
-      - patroni1_data:/var/lib/postgresql
+      - patroni1_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - etcd-net
@@ -33,7 +33,7 @@ services:
     volumes:
       - ./patroni/patroni.yml:/patroni.yml:ro
       - ./init-scripts:/opt/init-scripts:ro
-      - patroni2_data:/var/lib/postgresql
+      - patroni2_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - etcd-net
@@ -53,10 +53,27 @@ services:
     volumes:
       - ./patroni/patroni.yml:/patroni.yml:ro
       - ./init-scripts:/opt/init-scripts:ro
-      - patroni3_data:/var/lib/postgresql
+      - patroni3_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - etcd-net
+      - patroni-net
+    
+  haproxy:
+    image: haproxy:2.9-alpine
+    container_name: haproxy
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "127.0.0.1:5000:5000"
+      - "127.0.0.1:5001:5001"
+      - "127.0.0.1:7000:7000"
+    depends_on:
+      - patroni1
+      - patroni2
+      - patroni3
+    restart: unless-stopped
+    networks:
       - patroni-net
 
 volumes:

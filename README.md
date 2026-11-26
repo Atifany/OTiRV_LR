@@ -38,7 +38,10 @@ docker exec patroni2 psql -U postgres -d orders_db -c \
 
 Switchover test:<br>
 ```docker exec patroni1 patronictl -c /patroni.yml switchover --force```
-
+Failover test:<br>
+```docker down patroni1```
+Скрипт под отдельный терминал читает статус кластера:<br>
+```while true; do date +%T; curl -s http://127.0.0.1:7000/ > /dev/null; sleep 1; done```
 
 Для удаления контейнера:<br>
 ```docker compose down --rmi all```<br>
@@ -48,6 +51,8 @@ Switchover test:<br>
 Для доступа к web-dbeaver (настраивается в .env):<br>
 ```http://localhost:8082```<br>
 
+Для запроса GET через order-service:
+```curl -s http://localhost:8081/orders```
 Для проверки POST запроса order-service можно записать новую строку в таблицу через терминал:<br>
 ```
 curl -X POST http://localhost:8081/orders \
